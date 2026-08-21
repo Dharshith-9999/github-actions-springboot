@@ -1,0 +1,39 @@
+name: Spring Boot CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+permissions:
+  contents: read
+jobs:
+  build:
+    name: build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      
+      - name: Setup java17
+        uses: action/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      
+      - name: Build Application run tests
+        run: mvn clean verify
+
+      - name: Upload artifacts
+        uses: action/upload-artifact@v4
+        with:
+          name: Springboot-Application
+          path: target/*.jar
+          if-no-files-found: error

@@ -1,0 +1,11 @@
+# Maven build files
+target/
+
+# Log files
+*.log
+
+# IntelliJ IDEA
+.idea/
+
+# VS Code
+.vscode/

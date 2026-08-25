@@ -31,6 +31,16 @@ jobs:
       - name: Build Application run tests
         run: mvn clean verify
 
+      - name: setup jfCLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{vars.JF_URL}}
+          JF_ACCESS_TOKEN: ${{secrets.JF_ACCESS_TOKEN}}
+      
+      - name: upload artifacts
+        run: |
+          jf rt upload "target/*.jar" "maven-local/"
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:

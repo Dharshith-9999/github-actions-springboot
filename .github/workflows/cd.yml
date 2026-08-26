@@ -72,11 +72,12 @@ jobs:
               /opt/springboot/app.jar
 
             echo "Starting application..."
+
             sudo bash -c '
               nohup java -jar /opt/springboot/app.jar \
                 > /opt/springboot/application.log 2>&1 &
-
-              echo $! | sudo tee /opt/springboot/app.pid > /dev/null
+              echo $! > /opt/springboot/app.pid
+            '
 
             sleep 10
 

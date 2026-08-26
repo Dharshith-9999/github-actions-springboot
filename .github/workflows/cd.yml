@@ -79,11 +79,17 @@ jobs:
               echo $! > /opt/springboot/app.pid
             '
 
-            sleep 10
-
             echo "Checking application..."
-            PID=$(cat /opt/springboot/app.pid)
-            kill -0 "$PID"
+
+            PID=$(sudo cat /opt/springboot/app.pid)
+
+            if sudo ps -p "$PID" > /dev/null; then
+              echo "Application is running with PID $PID"
+            else
+              echo "Application failed to start"
+              sudo cat /opt/springboot/application.log
+              exit 1
+            fi
 
       - name: Verify application health
         run: |

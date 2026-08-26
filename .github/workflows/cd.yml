@@ -68,7 +68,7 @@ jobs:
             sudo rm -f /opt/springboot/app.jar
 
             echo "Deploying new application..."
-            sudo mv /tmp/springboot-deploy/github-actions-springboot-1.0-SNAPSHOT.jar \
+            sudo mv /tmp/springboot-deploy/deployment-artifact/github-actions-springboot-1.0-SNAPSHOT.jar \
               /opt/springboot/app.jar
 
             echo "Starting application..."

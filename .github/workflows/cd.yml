@@ -1,7 +1,9 @@
 name: Spring Boot CD
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - feature/08-2026
     inputs:
       artifact_version:
         description: "Version of the JAR to deploy"

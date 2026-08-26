@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - feature/08-2026
-    inputs:
-      artifact_version:
-        description: "Version of the JAR to deploy"
-        required: true
-        default: "1.0-SNAPSHOT"
-        type: string
 
 permissions:
   contents: read
@@ -32,9 +26,10 @@ jobs:
           mkdir -p deployment-artifact
 
           jf rt download \
-            "maven-local/target/github-actions-springboot-${{ inputs.artifact_version }}.jar" \
+            "maven-local/target/github-actions-springboot-1.0-SNAPSHOT.jar" \
             "deployment-artifact/" \
-            --flat=true
+            --flat=true \
+            --fail-no-op
 
           ls -lh deployment-artifact/
 
@@ -44,8 +39,8 @@ jobs:
           host: ${{ secrets.TEST_SERVER_HOST }}
           username: ${{ secrets.TEST_SERVER_USER }}
           key: ${{ secrets.TEST_SERVER_SSH_KEY }}
-          source: "deployment-artifact/*.jar"
-          target: "/opt/springboot"
+          source: "deployment-artifact/github-actions-springboot-1.0-SNAPSHOT.jar"
+          target: "/tmp/springboot-deploy"
 
       - name: Deploy application on Testing Server
         uses: appleboy/ssh-action@v1
@@ -59,15 +54,16 @@ jobs:
             sudo mkdir -p /opt/springboot
 
             echo "Stopping existing application..."
-            sudo pkill -f 'github-actions-springboot.*\.jar' || true
+            sudo pkill -f 'app.jar' || true
 
             sleep 5
 
             echo "Removing old application..."
-            sudo rm -f /opt/springboot/github-actions-springboot-*.jar
+            sudo rm -f /opt/springboot/app.jar
 
-            echo "Moving new application..."
-            sudo mv /opt/springboot/deployment-artifact/*.jar /opt/springboot/app.jar || true
+            echo "Deploying new application..."
+            sudo mv /tmp/springboot-deploy/github-actions-springboot-1.0-SNAPSHOT.jar \
+              /opt/springboot/app.jar
 
             echo "Starting application..."
             nohup java -jar /opt/springboot/app.jar \
@@ -75,7 +71,7 @@ jobs:
 
             sleep 10
 
-            echo "Checking application process..."
+            echo "Checking application..."
             pgrep -f 'app.jar'
 
       - name: Verify application health
